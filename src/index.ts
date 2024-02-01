@@ -1,13 +1,15 @@
 import jsonld from "jsonld";
-// @ts-ignore
 import jsigs from "jsonld-signatures";
-// @ts-ignore
 import { DataIntegrityProof } from "@digitalbazaar/data-integrity";
-// @ts-ignore
 import * as EcdsaMultikey from "@digitalbazaar/ecdsa-multikey"
-// @ts-ignore
 import { cryptosuite as ecdsaRdfc2019Cryptosuite } from "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite";
 import { unsignedCredential } from "./unsignedCredential.js";
+import *  as Types from "./@types/commonTypes.js"
+
+// Type declarations not having documentLoader for some reason.
+// declare module "jsonld" {
+//     export function documentLoader(url: URL, options: {}): any;
+// }
 
 const { purposes: { AssertionProofPurpose } } = jsigs;
 
@@ -24,8 +26,7 @@ async function generateKeyPair() {
     const keyId = `${controller}#key-1`
 
     // generates
-    const keyPair = EcdsaMultikey.generate({
-        // curve: "P-256" | "P-384" | "P-521"
+    const keyPair = await EcdsaMultikey.generate({
         curve: "P-384",
         id: keyId,
         controller,
@@ -55,16 +56,16 @@ async function generateKeyPair() {
     return keyPair;
 }
 
-async function importKeyPair(exportedKeyPair: object) {
+async function importKeyPair(exportedKeyPair: Types.MultiKey) {
     return EcdsaMultikey.from(exportedKeyPair);
 }
 
-async function sign(data: Uint8Array, keyPair: any): Promise<Uint8Array> {
+async function sign(data: Uint8Array, keyPair: Types.KeyPairInterface): Promise<Uint8Array> {
     const { sign } = keyPair.signer();
     return sign({ data });
 }
 
-async function verify(data: Uint8Array, publicKey: any, signature: Uint8Array): Promise<boolean> {
+async function verify(data: Uint8Array, publicKey: Types.KeyPairInterface, signature: Uint8Array): Promise<boolean> {
     const { verify } = publicKey.verifier();
     return await verify({ data, signature });
 }
@@ -79,7 +80,7 @@ async function signAndVerify() {
         controller: 'https://example.com/issuer',
         publicKeyMultibase: 'z82LkzRb12sc6sKUPn7B1FYLMiXY67HBF8EJJYJpiMAtt6hMscxRKUiviC9u9MX6tNsNTen',
         secretKeyMultibase: 'z2faqFHcxyq5SJXXd5epLzozTrDFrFiWRCzN6BKQorjzrwa4RdqCWrD5UtsPzvvkbcxMnn'
-    };
+    } as const;
     const fullKeyPair = await EcdsaMultikey.from(FULL_KEY_PAIR);
     const signature: Uint8Array = await sign(testData, fullKeyPair);
     // Verifying data
@@ -89,7 +90,7 @@ async function signAndVerify() {
         type: 'Multikey',
         controller: 'https://example.com/issuer',
         publicKeyMultibase: 'z82LkzRb12sc6sKUPn7B1FYLMiXY67HBF8EJJYJpiMAtt6hMscxRKUiviC9u9MX6tNsNTen',
-    };
+    } as const;
     const publicKey = await EcdsaMultikey.from(PUBLIC_KEY);
     const varidity = await verify(testData, publicKey, signature);
     console.log("varidity", varidity);
@@ -103,7 +104,7 @@ async function main() {
         controller: 'https://controller.com/controller',
         publicKeyMultibase: 'z82LkzRb12sc6sKUPn7B1FYLMiXY67HBF8EJJYJpiMAtt6hMscxRKUiviC9u9MX6tNsNTen',
         secretKeyMultibase: 'z2faqFHcxyq5SJXXd5epLzozTrDFrFiWRCzN6BKQorjzrwa4RdqCWrD5UtsPzvvkbcxMnn'
-    };
+    } as const;
     const fullKeyPair = await EcdsaMultikey.from(FULL_KEY_PAIR);
     const signer = fullKeyPair.signer();
     const suite = new DataIntegrityProof({
