@@ -12,8 +12,7 @@ export const unsignedCredential: jsonld.JsonLdDocument = {
                     "id": "@id",
                     "type": "@type",
                     "email": {
-                        "@id": "https://schema.org/email",
-                        "@type": "@id"
+                        "@id": "https://schema.org/email"
                     },
                     "affiliation": "https://schema.org/affiliation"
                 }

@@ -7,42 +7,9 @@ import { DataIntegrityProof } from "@digitalbazaar/data-integrity";
 import * as EcdsaMultikey from "@digitalbazaar/ecdsa-multikey"
 // @ts-ignore
 import { cryptosuite as ecdsaRdfc2019Cryptosuite } from "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite";
+import { unsignedCredential } from "./unsignedCredential.js";
 
 const { purposes: { AssertionProofPurpose } } = jsigs;
-
-export const unsignedCredential: jsonld.JsonLdDocument = {
-    "@context": [
-        "https://www.w3.org/ns/credentials/v2",
-        {
-            "EmployeeCredential": "https://schema.example.co.jp/EmployeeCredential",
-            "Employee": {
-                "@id": "https://schema.example.co.jp/Employee",
-                "@context": {
-                    "@protected": true,
-                    "id": "@id",
-                    "type": "@type",
-                    "email": "https://schema.org/email",
-                    "affiliation": "https://schema.org/affiliation"
-                }
-            }
-        }
-    ],
-    "type": ["VerifiableCredential", "EmployeeCredential"],
-    "issuer": "https://example.com/issuer",
-    "credentialSubject": [{
-        "type": "Employee",
-        "id": "did:example:employees/6921",
-        "email": "subject@example.co.jp",
-        "name": [{
-            "@language": "ja",
-            "@value": "従業員 氏名"
-        }],
-        "affiliation": {
-            "name": "Verifiable Credential Div. Sample Dept. JavaScript Grp."
-        }
-    }]
-}
-
 
 // 1. Which key type and suite to use?
 // 2. What is your Private Key Storage strategy? (KMS, file system, secure wallet)
