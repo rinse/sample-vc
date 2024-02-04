@@ -1,12 +1,12 @@
 declare module "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite" {
-    import { MultiKey, Verifier } from "commonTypes";
+    import { Multikey, Verifier } from "commonTypes";
     import { canonize } from "jsonld";
 
     type RequiredAlgorithm = string[];
 
     type Cryptosuite = {
         canonize: typeof canonize,
-        createVerifier(options: { verificationMethod: MultiKey }): Verifier,
+        createVerifier(options: { verificationMethod: Multikey }): Verifier,
         name: string,
         requiredAlgorithm: RequiredAlgorithm,
     };

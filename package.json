@@ -29,6 +29,7 @@
     "@digitalbazaar/ecdsa-multikey": "^1.6.0",
     "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite": "^1.0.1",
     "@digitalbazaar/eddsa-rdfc-2022-cryptosuite": "^1.0.1",
+    "@digitalbazaar/http-client": "^4.1.0",
     "jsonld": "^8.3.2",
     "jsonld-signatures": "^11.2.1"
   },

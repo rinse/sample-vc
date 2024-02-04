@@ -20,15 +20,12 @@ export const unsignedCredential: jsonld.JsonLdDocument = {
         }
     ],
     "type": ["VerifiableCredential", "EmployeeCredential"],
-    "issuer": "https://example.com/issuer",
+    "issuer": "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationRelationship.json",
     "credentialSubject": [{
         "type": "Employee",
         "id": "did:example:employees/6921",
         "email": "subject@example.co.jp",
-        "name": [{
-            "@language": "ja",
-            "@value": "従業員 氏名"
-        }],
+        "name": "John Smith",
         "affiliation": {
             "name": "Verifiable Credential Div. Sample Dept. JavaScript Grp."
         }

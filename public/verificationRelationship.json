@@ -1,0 +1,14 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/multikey/v1"
+    ],
+    "id": "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationRelationship.json",
+    "assertionMethod": [
+        {
+            "id": "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationMethod.json",
+            "type": "Multikey",
+            "controller": "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationRelationship.json"
+        }
+    ]
+}

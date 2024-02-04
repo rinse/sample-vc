@@ -1,65 +1,46 @@
-# Verifiable credentials
+# Verifiable Credentials
 
-General-purpose verifiable credentials for everywhere.
+[Verifiable Credential](https://www.w3.org/TR/vc-data-model-2.0/) の発行と検証を試すプロジェクト。
 
-## Overview
+## 詳細
 
-[Verifiable credential](https://www.w3.org/TR/vc-data-model-2.0/) has a quite general deta model,
-so many variety of systems can use of it. There are implementations of VC but they are made for each
-specific backend and not quite general:
+- [Securing Mechanisms](https://www.w3.org/TR/vc-data-model-2.0/#securing-mechanisms) : [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity)
+    - embedded proof
+- [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) . [proof type](https://www.w3.org/TR/vc-data-integrity/#dfn-proof-type) : [data integrity proof](https://www.w3.org/TR/vc-data-integrity/#dfn-data-integrity-proof)
+- [Verification method](https://www.w3.org/TR/vc-data-integrity/#dfn-verification-method): [Multikey](https://www.w3.org/TR/vc-data-integrity/#multikey)
+- [data integrity proof](https://www.w3.org/TR/vc-data-integrity/#dfn-data-integrity-proof) . [cryptographic suite](https://www.w3.org/TR/vc-data-integrity/#dfn-cryptosuite) : [ecdsa-rdfc-2019](https://www.w3.org/TR/vc-di-ecdsa/#ecdsa-rdfc-2019)
 
-- [AnonCreds](https://hyperledger.github.io/anoncreds-spec/) for Hyperledger Indy
-- [Blockcerts](https://www.blockcerts.org/) for Ethereum
+## 注意するべき点
 
-This is a general-purpose implementation of the verifiable credentials data model,
-which can be used for a reference implementation or a sample VC generator.
-Note that this is **not** a production-ready application.
+特に VC において注意するべき点を挙げる。
 
-## Credentials (日本語)
+1. [Controller document](https://www.w3.org/TR/vc-data-integrity/#controller-documents) は内容によって複数の種類の事柄を表す
+    * W3C文書中でも内容が整理されておらず、今後 did-core や vc-jose-cose の内容と統廃合される可能性がある
+        * https://www.w3.org/TR/vc-data-integrity/#:~:text=Potential%20for%20stand-alone%20Controller%20Document%20specification 
+    * [Verification Method](https://www.w3.org/TR/vc-data-integrity/#verification-methods)
+        * 主に[Verification Material](https://www.w3.org/TR/vc-data-integrity/#verification-material)を表す
+        * [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) では以下の2つが定義されている
+            1. [Multikey](https://www.w3.org/TR/vc-data-integrity/#multikey)
+            1. [JsonWebKey](https://www.w3.org/TR/vc-data-integrity/#jsonwebkey)
+    * [Verifiable Relationship](https://www.w3.org/TR/vc-data-integrity/#verification-relationships)
+        * Controller と verification method の間の関係を表す
+        * [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) では以下の5つが定義されている
+            * Authentication, Assertion, Key Aggreement, Capability Invocation, Capability Delegation
+        * VC で利用するのは主に [Assertion](https://www.w3.org/TR/vc-data-integrity/#assertion)
+            * これは特定の Verification method が VC の検証に使われることを表す
+2. VC の [Issuer](https://www.w3.org/TR/vc-data-model-2.0/#defn-issuer) は解決すると [controller document](https://www.w3.org/TR/vc-data-integrity/#controller-documents) になるとよい (RECOMMENDED)
+    * [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) の [Relationship to Verifiable Credentials](https://www.w3.org/TR/vc-data-integrity/#relationship-to-verifiable-credentials) には以下の記載があるため、Verifiable relationship に解決されるURLが良さそう。
+        > to ensure that the value of the controller property of a proof's verification method matches the URL value used to identify the issuer
+3. [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) の [proof.verificationMethod](https://www.w3.org/TR/vc-data-integrity/#:~:text=verificationMethod,-The%20means%20and%20information%20needed%20to%20verify%20the%20proof) プロパティ は、解決すると [verification method](https://www.w3.org/TR/vc-data-integrity/#ref-for-dfn-verification-method-5) になる
+    * [Verification method](https://www.w3.org/TR/vc-data-integrity/#ref-for-dfn-verification-method-5) は有効な [controller document](https://www.w3.org/TR/vc-data-integrity/#controller-documents) でなければならない
+    * https://www.w3.org/TR/vc-data-integrity/#retrieve-verification-method
+4. [Verification method](https://www.w3.org/TR/vc-data-integrity/#dfn-verificationmethod) の [controller](https://www.w3.org/TR/vc-data-integrity/#defn-controller) プロパティは、解決すると [verification relationship](https://www.w3.org/TR/vc-data-integrity/#verification-relationships) になる
+    * [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity) の [Relationship to Verifiable Credentials](https://www.w3.org/TR/vc-data-integrity/#relationship-to-verifiable-credentials) には以下の記載があるため、この値は VC の [Issuer](https://www.w3.org/TR/vc-data-model-2.0/#defn-issuer) プロパティと一致すると良い（はず）。
+        > to ensure that the value of the controller property of a proof's verification method matches the URL value used to identify the issuer
 
-資格証明(credential)とは、ある単一の主体(entity)によって作成された、1つ以上の資格(claim)の集まりである。
-その他にも資格証明は、その資格に関連する識別子(identifier)やメタ情報を含む場合がある。
-例えば発行者(issuer)や有効期限、アイコン、検証のための公開鍵、資格取り消しの仕組みなどである。
-またメタデータは発行者によって署名される場合がある。
-検証可能な資格証明とは、改竄に耐性のある資格と、発行者を暗号的に証明するメタデータを合わせたものである。
+## 関連規格
 
-- Verifiable Credential
-    - Credential Metadata
-    - Claim(s)
-    - Proof(s)
-
-## Presentation (日本語)
-
-検証可能な提示(Verifiable presentation)は、複数の検証可能な資格証明と、任意の追加のデータをJSON-LDでエンコードしたものを表現できる。
-これは保持者が資格を検証者に対して提示するときに利用される。また検証可能な資格証明をそのまま提示することも可能である。
-提示に含まれる資格はしばしば単一の主体(subject)についてのものであるが、複数の発行者による場合がある。
-
-- Verifiable Presentation
-    - Presentation Metadata
-    - Verifiable Credential(s)
-    - Proof(s)
-
-## JSON-LD キーワード
-
-- `@id`
-    - その構造の識別子を表す
-    - 識別子の形式はURLでなければならないが、必ずしもdereferenceできる必要はない
-        - なおJSON-LDでは識別子の形式はIRIと規定されているが、IRIはURLを包含する概念である (URL ⊆ URI ⊆ IRI)
-        - URLは様々なスキームを含む点に注意する
-            - http, ftp, file, did, etc.
-    - `id`を `@id`のエイリアスとして利用できる
-- `@type`
-    - その構造が何を表すのかを表す
-    - 型の形式は一つ以上のURLである
-        - 複数のURLが与えられたとき、各URLに順序はないことに注意する
-        - 言い換えれば、そのJSON配列は順序なしの集合として解釈される
-    - 型にはContextによって分かりやすい名前が与えられることが望ましい
-    - 識別子の形式はURLでなければならないが、必ずしもdereferenceできる必要はない
-    - `type`を `@type`のエイリアスとして利用できる
-    - 以下の型を想定したオブジェクトは、typeで型を指定しなければならない(MUST):
-        - VC (VerifiableCredential)
-        - VP (VerifiablePresentation)
-        - [credentialStatus](https://www.w3.org/TR/vc-data-model-2.0/#status) (BitstringStatusListEntry)
-        - [termsOfUse](https://www.w3.org/TR/vc-data-model-2.0/#terms-of-use)
-        - [evidence](https://www.w3.org/TR/vc-data-model-2.0/#evidence)
-
+- [VC Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
+- [VC Data Integrity](https://www.w3.org/TR/vc-data-integrity)
+- [VC Specification Dirirectory - Securing Mechanisms](https://w3c.github.io/vc-specs-dir/#securing-mechanisms)
+- [VC Data Integrity ECDSA Cryptosuites v1.0](https://www.w3.org/TR/vc-di-ecdsa/)

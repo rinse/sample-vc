@@ -6,7 +6,7 @@ declare module "@digitalbazaar/data-integrity" {
 
     class DataIntegrityProof extends LinkedDataProof {
         constructor(options: {
-            signer: Signer,
+            signer?: Signer,
             date?: Date | number,
             cryptosuite: Cryptosuite,
             legacyContext?: boolean,

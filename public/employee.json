@@ -1,0 +1,17 @@
+{
+  "@context": {
+      "EmployeeCredential": "https://schema.example.co.jp/EmployeeCredential",
+      "Employee": {
+        "@id": "https://schema.example.co.jp/Employee",
+        "@context": {
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "email": {
+            "@id": "https://schema.org/email"
+          },
+          "affiliation": "https://schema.org/affiliation"
+        }
+      }
+    }
+}

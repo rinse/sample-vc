@@ -1,6 +1,6 @@
 declare module "@digitalbazaar/ecdsa-multikey" {
     import { JsonWebKey } from "crypto";
-    import { ECDSACurve, KeyPairInterface, MultiKey } from "commonTypes";
+    import { ECDSACurve, KeyPairInterface, Multikey } from "commonTypes";
 
     function generate(option: {
         curve: ECDSACurve,
@@ -10,7 +10,7 @@ declare module "@digitalbazaar/ecdsa-multikey" {
     }): Promise<KeyPairInterface>;
 
     function from(
-        key: MultiKey,
+        key: Multikey,
         option?: {
             keyAgreement?: boolean,
         },

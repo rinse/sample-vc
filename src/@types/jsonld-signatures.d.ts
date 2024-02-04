@@ -1,6 +1,6 @@
 declare module "jsonld-signatures" {
     import jsonld from "jsonld";
-    import { Signer, Verifier } from "commonTypes";
+    import { DocumentLoader } from "commonTypes";
 
     class ProofPurpose {}
     class ControllerProofPurpose extends ProofPurpose {}
@@ -10,14 +10,20 @@ declare module "jsonld-signatures" {
     function sign(document: jsonld.JsonLdDocument, option: {
         suite: LinkedDataSignature,
         purpose: ProofPurpose,
-        documentLoader(url: URL, options: {}): any,
-    }): Signer;
+        documentLoader: DocumentLoader,
+    }): jsonld.JsonLdDocument;
+
+    type VerificationResult = {
+        verified: boolean,
+        results: Array,
+        error: Error,
+    };
 
     function verify(document: jsonld.JsonLdDocument, option: {
         suite: LinkedDataSignature,
         purpose: ProofPurpose,
-        documentLoader(url: URL, optoins: {}): any,
-    }): Verifier;
+        documentLoader: DocumentLoader,
+    }): Promise<VerificationResult>;
 
     class LinkedDataProof {}
     class LinkedDataSignature extends LinkedDataProof {}
@@ -26,7 +32,7 @@ declare module "jsonld-signatures" {
         LinkedDataProof: typeof LinkedDataProof,
         LinkedDataSignature: typeof LinkedDataSignature,
     };
-    const suite: Suite;
+    const suites: Suite;
 
     type Purpose = {
         AssertionProofPurpose: typeof AssertionProofPurpose,
