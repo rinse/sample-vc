@@ -20,6 +20,7 @@
   "homepage": "https://github.com/rinse/verifiable-credentials#readme",
   "devDependencies": {
     "@types/jsonld": "^1.5.13",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.6",
     "typescript": "^5.3.3"
   },
@@ -31,7 +32,8 @@
     "@digitalbazaar/eddsa-rdfc-2022-cryptosuite": "^1.0.1",
     "@digitalbazaar/http-client": "^4.1.0",
     "jsonld": "^8.3.2",
-    "jsonld-signatures": "^11.2.1"
+    "jsonld-signatures": "^11.2.1",
+    "jsonwebtoken": "^9.0.2"
   },
   "type": "module"
 }
