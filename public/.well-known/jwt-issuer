@@ -1,0 +1,16 @@
+{
+  "issuer": "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com",
+  "jwks": {
+    "keys": [
+      {
+        "kid": "key1",
+        "key_ops": ["verify"],
+        "ext": true,
+        "kty": "EC",
+        "x": "9thYrD04QBs6-3sTnxDNKZ4K-n85q8W7HmoM5w39SMuCpjLy8Kxf6miJkIiiEdiN",
+        "y": "Nf68IXN-4lgYFNgBTMp7dLRhrIw_oLIERTWR-_eqJ3qOxwxb7X9fIJ39eSorApb1",
+        "crv": "P-384"
+      }
+    ]
+  }
+}

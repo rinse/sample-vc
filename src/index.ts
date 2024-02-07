@@ -1,5 +1,5 @@
 import jsonld from "jsonld";
-import { createPrivateKey, createPublicKey, generateKeyPair } from "crypto";
+import { JwkKeyExportOptions, createPrivateKey, createPublicKey, generateKeyPair } from "crypto";
 import jwt from "jsonwebtoken";
 import { makeUnsignedCredential } from "./unsignedCredential.js";
 import * as EcdsaMultikey from "@digitalbazaar/ecdsa-multikey"
@@ -64,18 +64,20 @@ async function main() {
     // const [publicKey, privateKey] = keyPair;
 
     // Import multikey used in data-integrity to share with the same key.
+    const issuer = "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com";
     const secretKeyPem = await multikeyToPrivateKeyPem(fullMultikey);
     const unsignedCredential = makeUnsignedCredential({
-        issuer: "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/jwks.json",
+        issuer: issuer,
     });
     const signed = jwt.sign({
         vc: unsignedCredential,
     }, secretKeyPem, {
         algorithm: "ES384",
-        issuer: "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/jwks.json",
+        issuer: issuer,
         header: {
             alg: "ES384",
             typ: "vc+ld+json+sd-jwt",
+            kid: "key1",
         },
     });
     console.log(signed);
@@ -83,15 +85,31 @@ async function main() {
     // const jwk = await multikeyToPublicKeyJwk(fullMultikey);
     // console.log(JSON.stringify(jwk));
 
-    const res = await fetch("https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/jwks.json");
-    const jwks = await res.json();
+    const unverifiedJWT: jwt.Jwt | null = jwt.decode(signed, { json: true, complete: true })
+    // @ts-ignore
+    const payload: jwt.JwtPayload | undefined = unverifiedJWT?.payload;
+    const iss = payload?.iss;
+    if (iss === undefined) {
+        throw new Error("The iss is missing in the JWT");
+    }
+    const kid = unverifiedJWT?.header?.kid;
+    if (kid === undefined) {
+        throw new Error("The kid is missing in the JOSE header");
+    }
+    const res = await fetch(`${iss}/.well-known/jwt-issuer`);
+    const jwtIssuer = await res.json();
+    if (jwtIssuer.issuer !== iss) {
+        throw new Error(`/.well-known/jwt-ssuer#/issuer does not match to issuer. Expected: ${iss}, actual: ${jwtIssuer.issuer}`);
+    }
+    const jwks: any[] = jwtIssuer.jwks.keys;
+    const jwk = jwks.find(jwk => jwk.kid === kid);
     const publicKeyObject = createPublicKey({
-        key: jwks.keys[0],
+        key: jwk,
         format: "jwk",
     });
     const publicKeyPem = publicKeyObject.export({ format: "pem", type: "spki" }).toString();
     const verificationResult = jwt.verify(signed, publicKeyPem, {
-        issuer: "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/jwks.json",
+        issuer: iss,
     });
     console.log(`Verification succeeded. Payload: ${JSON.stringify(verificationResult)}`);
 }
