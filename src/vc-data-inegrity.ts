@@ -5,17 +5,7 @@ import * as EcdsaMultikey from "@digitalbazaar/ecdsa-multikey"
 import { cryptosuite as ecdsaRdfc2019Cryptosuite } from "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite";
 import { makeUnsignedCredential } from "./unsignedCredential.js";
 import * as Types from "./@types/commonTypes.js"
-
-// Type declarations not having documentLoader for some reason.
-// declare module "jsonld" {
-//     export function documentLoader(url: URL, options: {}): any;
-// }
-
-// 1. Which key type and suite to use?
-// 2. What is your Private Key Storage strategy? (KMS, file system, secure wallet)
-// 3. Where will you publish your Public Key? (What is your key resolving strategy)
-//    This will influence what you'll use for Key IDs
-// 4. What is your Controller document strategy? (DID, embedded, web, ...)
+import { fullMultikey } from "./keyPair.js";
 
 // Sign data with KeyPairInterface
 async function sign(data: Uint8Array, keyPair: Types.KeyPairInterface): Promise<Uint8Array> {
@@ -72,24 +62,7 @@ async function verifyCredential(verifiableCredential: jsonld.JsonLdDocument): Pr
     });
 }
 
-async function main() {
-    // Generates an ECDSA key pair in the multikey format.
-    // const fullKeyPair = await EcdsaMultikey.generate({
-    //     curve: "P-384",
-    //     id: "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationMethod.json",
-    //     controller:  "https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationRelationship.json",
-    // });
-    // console.log(await fullKeyPair.export({publicKey: true, secretKey: true}));
-
-    const fullMultikey: Types.Multikey = {
-        '@context': 'https://w3id.org/security/multikey/v1',
-        id: 'https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationMethod.json',
-        type: 'Multikey',
-        controller: 'https://sample-public-keys.s3.ap-northeast-1.amazonaws.com/verificationRelationship.json',
-        publicKeyMultibase: 'z82Lm4xyCxFwD1jCh6cTuQnQ2Kp2pVUbJHUcrcZbfUr9J8nVDdztKuvG7KHcKHpCNPCRpmA',
-        secretKeyMultibase: 'z2fanWaRmNUryCkenKhX4saWRdviV7W6LDkWtDupTr5TjNxrwt23UDoZyMGHbaK6rS8JFm'
-    } as const;
-
+export async function main() {
     // Instantiate a convenient interface with multikey
     const fullKeyPair: Types.KeyPairInterface = await EcdsaMultikey.from(fullMultikey);
 
@@ -104,6 +77,3 @@ async function main() {
     const verificationResult = await verifyCredential(signedCredential);
     console.log(JSON.stringify(verificationResult));
 }
-
-main();
-
