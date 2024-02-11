@@ -1,6 +1,6 @@
 import jsonld from "jsonld";
 import { createPublicKey } from "crypto";
-import jwt, { Jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { makeUnsignedCredential } from "./unsignedCredential.js";
 import { pemSecretKey } from "./keyPair.js";
 
